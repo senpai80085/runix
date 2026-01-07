@@ -58,14 +58,16 @@ runix/
     cd runix
     ```
 
-2.  **Environment Setup**:
-    Run the included setup script. It will verify Python, install dependencies, and prompt for your API Key.
+3.  **Run Setup**:
+    Launch the setup script:
     ```cmd
     setup.bat
     ```
+    *   **Option 1 (Local)**: Recommended for **Live Analysis** (Cloud Run).
+    *   **Option 2 (Docker)**: Recommended for **Mock Demo** (Clean environment).
 
-3.  **Access Dashboard**:
-    The dashboard will open automatically at `http://localhost:8080`.
+4.  **Access Dashboard**:
+    Open `http://localhost:8080` in your browser.
 
 ---
 

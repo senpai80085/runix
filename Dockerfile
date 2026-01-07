@@ -14,11 +14,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY runix/ ./runix/
-COPY runix/main.py ./
+COPY templates/ ./templates/
+COPY local_server.py .
 
 # Set environment variables
 ENV PORT=8080
 ENV PYTHONUNBUFFERED=1
 
-# Run with gunicorn for production
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 2 --timeout 300 main:app
+# Run the local dashboard server
+CMD ["python", "local_server.py"]

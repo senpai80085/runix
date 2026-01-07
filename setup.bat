@@ -7,6 +7,29 @@ echo       RUNIX WORKLOAD INTELLIGENCE - EASY SETUP
 echo ========================================================
 echo.
 
+:MENU
+echo How would you like to run Runix?
+echo.
+echo [1] Run Locally (Python) 
+echo     - Best for LIVE Analysis of Cloud Run services
+echo     - Requires Python 3.10+
+echo.
+echo [2] Run in Docker
+echo     - Best for MOCK Demo and hygiene
+echo     - Requires Docker Desktop
+echo.
+set /p choice="Enter your choice (1 or 2): "
+
+if "%choice%"=="1" goto LOCAL
+if "%choice%"=="2" goto DOCKER
+echo Invalid choice. Please try again.
+goto MENU
+
+:LOCAL
+echo.
+echo [LOG] Selected: LOCAL RUN
+echo.
+
 :: 1. Check Python
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
@@ -64,8 +87,55 @@ echo.
 
 start http://localhost:8080
 
-:: Run server with the API key set
-set GEMINI_API_KEY=%GEMINI_API_KEY%
+:: Run server
 python local_server.py
+pause
+exit /b
+
+:DOCKER
+echo.
+echo [LOG] Selected: DOCKER RUN
+echo.
+
+:: 1. Check Docker
+docker --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Docker is not installed or not running.
+    echo Please install Docker Desktop.
+    pause
+    exit /b
+)
+echo [OK] Docker found.
+
+:: 2. Configure API Key
+if "%GEMINI_API_KEY%"=="" (
+    echo [ERROR] GEMINI_API_KEY is not set.
+    echo Please set it in your environment before running this script.
+    pause
+    exit /b
+)
+
+:: 3. Build Image
+echo.
+echo [1/2] Building Docker Image (this may take a minute)...
+docker build -t runix .
+if %errorlevel% neq 0 (
+    echo [ERROR] Docker build failed.
+    pause
+    exit /b
+)
+
+:: 4. Run Container
+echo.
+echo [2/2] Starting Container...
+echo.
+echo ========================================================
+echo    DASHBOARD IS READY!
+echo    Opening http://localhost:8080
+echo ========================================================
+echo.
+
+start http://localhost:8080
+docker run -it --rm -p 8080:8080 -e GEMINI_API_KEY=%GEMINI_API_KEY% runix
 
 pause
